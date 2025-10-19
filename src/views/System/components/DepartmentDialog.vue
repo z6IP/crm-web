@@ -23,12 +23,7 @@
         <el-form-item label="父级部门" prop="parentId" v-if="dialogProps.row.level !== 1">
           <el-cascader
             v-model="dialogProps.row!.parentId"
-            :props="{
-              value: 'id',
-              label: 'name',
-              emitPath: false,
-              checkStrictly: true
-            }"
+            :props="{ value: 'id', label: 'name', emitPath: false, checkStrictly: true }"
             placeholder="请选择父级部门"
             :options="departmentList"
             :show-all-levels="false"
@@ -51,7 +46,6 @@ import { ref, reactive } from 'vue'
 import { ElMessage, FormInstance } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { DepartmentApi } from '@/api/modules/department'
-
 interface DialogProps {
   title: string
   isView: boolean
@@ -62,7 +56,6 @@ interface DialogProps {
   api?: (params: any) => Promise<any>
   getTableList?: () => Promise<any>
 }
-
 const dialogVisible = ref(false)
 const departmentList = ref<Array<any>>([])
 const dialogProps = ref<DialogProps>({
@@ -94,11 +87,9 @@ const getDepartmentList = async () => {
 defineExpose({
   acceptParams
 })
-
 const rules = reactive({
   name: [{ required: true, message: '请输入部门名称', trigger: 'blur' }]
 })
-
 const ruleFormRef = ref<FormInstance>()
 
 const handleSubmit = () => {
@@ -119,10 +110,9 @@ const handleSubmit = () => {
     }
   })
 }
-
 const cancelDialog = (isClean?: boolean) => {
   dialogVisible.value = false
-  const condition = ['查看', '编辑']
+  let condition = ['查看', '编辑']
   if (condition.includes(dialogProps.value.title) || isClean) {
     dialogProps.value.row = {}
     ruleFormRef.value!.resetFields()

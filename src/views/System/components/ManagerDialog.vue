@@ -34,6 +34,16 @@
             <el-option v-for="item in dialogProps.roleList" :key="item.Id" :label="item.name" :value="item.id" class="isabel-option" />
           </el-select>
         </el-form-item>
+        <el-form-item v-if="dialogProps.title !== '重置'" label="所属部门" prop="departId">
+          <el-cascader
+            v-model="dialogProps.row!.departId"
+            :props="{ value: 'id', label: 'name', emitPath: false, checkStrictly: true }"
+            placeholder="请选择管理员所属部门"
+            :options="departmentList"
+            :show-all-levels="false"
+            filterable
+          />
+        </el-form-item>
         <el-form-item v-if="dialogProps.title !== '重置'" label="状态" prop="status">
           <el-radio-group v-model="dialogProps.row!.status">
             <el-radio :label="1" border>正常</el-radio>
@@ -58,6 +68,7 @@ import { Dialog } from '@/components/Dialog'
 import { getRoleList } from '@/api/modules/role'
 import { getManagerInfoApi } from '@/api/modules/manager'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useDepartmentStore } from '@/store/modules/department'
 const appStore = useAppStoreWithOut()
 interface DialogProps {
   title: string
@@ -79,6 +90,8 @@ const dialogProps = ref<DialogProps>({
   fullscreen: true,
   maxHeight: '500px'
 })
+const departmentStore = useDepartmentStore()
+const departmentList = departmentStore.departmentList
 
 // 接收父组件传过来的参数
 const acceptParams = (params: DialogProps): void => {
