@@ -117,7 +117,7 @@ const handleHttpUpload = async (options: UploadRequestOptions) => {
   let formData = new FormData()
   formData.append('file', options.file)
   try {
-    const api = props.api ?? uploadFile
+    const api = props.api ?? uploadFile.upload
     const { data } = await api(formData)
     emit('update:imageUrl', data.fileUrl)
     // 调用 el-form 内部的校验方法（可自动校验）

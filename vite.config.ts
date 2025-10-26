@@ -96,7 +96,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       cors: true,
       // 跨域代理配置
       proxy: {
-        "/dev": {
+        "/crm-api": {
           target: "http://127.0.0.1:8081",
           changeOrigin: true,
           rewrite: path => path.replace(/^\/dev/, "")
