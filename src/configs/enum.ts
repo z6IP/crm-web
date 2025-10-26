@@ -3,6 +3,18 @@ type EnumInfo = {
   label: string
 }
 
+export enum ProductStatus {
+  INITIALIZING,
+  ONLINE,
+  OFFLINE
+}
+
+export const ProductStatusList: { [key in ProductStatus]: EnumInfo } = {
+  [ProductStatus.INITIALIZING]: { value: 0, label: '初始化' },
+  [ProductStatus.ONLINE]: { value: 1, label: '上架' },
+  [ProductStatus.OFFLINE]: { value: 2, label: '下架' }
+}
+
 export enum CustomerLevel {
   ORDINARY_CUSTOMER,
   PREMIUM_CUSTOMER,
