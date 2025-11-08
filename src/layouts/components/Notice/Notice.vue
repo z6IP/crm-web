@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="tsx">
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import ProTable from '@/components/ProTable/index.vue'
 import { View } from '@element-plus/icons-vue'
@@ -38,9 +38,10 @@ interface DialogProps {
   fullscreen?: boolean
   maxHeight?: number | string
 }
+
 const dialogProps = ref<DialogProps>({
   title: '通知列表',
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 const initParam = reactive({})

@@ -49,8 +49,10 @@
       </el-form>
     </div>
     <template #footer>
-      <el-button @click="cancelDialog">取消</el-button>
-      <el-button type="primary" v-show="!dialogProps.isView" @click="handleSubmit">确定</el-button>
+      <slot name="footer">
+        <el-button @click="cancelDialog">取消</el-button>
+        <el-button type="primary" v-show="!dialogProps.isView" @click="handleSubmit">确定</el-button>
+      </slot>
     </template>
   </Dialog>
 </template>
@@ -61,8 +63,6 @@ import { ElMessage, FormInstance } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { ProductStatusList } from '@/configs/enum'
 import UploadImg from '@/components/Upload/Img.vue'
-
-// import Avatar from '@/layouts/components/Header/components/Avatar.vue'
 
 interface DialogProps {
   title: string
@@ -81,27 +81,34 @@ const dialogProps = ref<DialogProps>({
   title: '',
   row: {},
   labelWidth: 120,
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 
+// 接收父组件传过来的参数
 const acceptParams = (params: DialogProps): void => {
+  params.row = { ...dialogProps.value.row, ...params.row }
   dialogProps.value = { ...dialogProps.value, ...params }
   dialogVisible.value = true
 }
 
-defineExpose({ acceptParams })
-
+defineExpose({
+  acceptParams
+})
 const rules = reactive({
   name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
   price: [
     { required: true, message: '请输入商品价格', trigger: 'blur' },
-    { pattern: /^\d+(\.\d{1,2})?$/, message: '商品价格最多小数点后两位', trigger: 'blur' }
+    {
+      pattern: /^\d+(\.\d{1,2})?$/,
+      message: '商品价格最多小数点后两位',
+      trigger: 'blur'
+    }
   ],
   stock: [
     { required: true, message: '请输入商品库存数量', trigger: 'blur' },
     {
-      validator: (rule: any, value: any, callback: any) => {
+      validator: (rule, value, callback) => {
         const num = Number(value)
         if (isNaN(num)) {
           callback(new Error('请输入数字'))
@@ -137,13 +144,12 @@ const handleSubmit = () => {
     }
   })
 }
-
 const cancelDialog = (isClean?: boolean) => {
   dialogVisible.value = false
-  const condition = ['查看', '编辑']
+  let condition = ['查看', '编辑']
   if (condition.includes(dialogProps.value.title) || isClean) {
     dialogProps.value.row = {}
-    ruleFormRef.value?.resetFields()
+    ruleFormRef.value!.resetFields()
   }
 }
 </script>

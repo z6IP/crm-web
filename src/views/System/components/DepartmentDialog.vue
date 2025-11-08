@@ -42,10 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { ElMessage, FormInstance } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { DepartmentApi } from '@/api/modules/department'
+
 interface DialogProps {
   title: string
   isView: boolean
@@ -56,6 +57,7 @@ interface DialogProps {
   api?: (params: any) => Promise<any>
   getTableList?: () => Promise<any>
 }
+
 const dialogVisible = ref(false)
 const departmentList = ref<Array<any>>([])
 const dialogProps = ref<DialogProps>({
@@ -63,7 +65,7 @@ const dialogProps = ref<DialogProps>({
   title: '',
   row: {},
   labelWidth: 160,
-  fullscreen: true,
+  fullscreen: falsee,
   maxHeight: '500px'
 })
 

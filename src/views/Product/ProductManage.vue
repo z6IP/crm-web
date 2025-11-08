@@ -3,59 +3,59 @@
     <ProTable
       ref="proTable"
       title="商品列表"
+      rowKey="id"
       :columns="columns"
       :requestApi="ProductApi.page"
       :initParam="initParam"
       :dataCallback="dataCallback"
       :searchCol="{ xs: 2, sm: 3, md: 4, lg: 6, xl: 8 }"
     >
-      <!-- 表格 header 按钮 -->
+      <!-- 表格头部：新增商品按钮 -->
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" v-hasPermi="['sys:product:add']" @click="openDrawer('新增')">新增商品 </el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="openDrawer('新增')">新增商品</el-button>
       </template>
-      <!-- 表格操作 -->
+
+      <!-- 表格操作栏：编辑、定时上下架 -->
       <template #operation="scope">
-        <el-button type="primary" link :icon="EditPen" v-hasPermi="['sys:product:edit']" @click="openDrawer('编辑', scope.row)">编辑 </el-button>
-        <el-button type="success" link :icon="Check" v-hasPermi="['sys:product:up']" @click="openStateDialog('商品定时上架', scope.row)" v-if="scope.row.status !== 1"
-          >商品上架
-        </el-button>
-        <el-button type="danger" link :icon="Bottom" v-hasPermi="['sys:product:down']" @click="openStateDialog('商品定时下架', scope.row)" v-if="scope.row.status === 1"
-          >商品下架
-        </el-button>
+        <el-button type="primary" link :icon="EditPen" @click="openDrawer('编辑', scope.row)">编辑</el-button>
+        <el-button type="success" link :icon="Check" @click="openStateDialog('商品定时上架', scope.row)" v-if="scope.row.status !== 1">商品上架 </el-button>
+        <el-button type="danger" link :icon="Bottom" @click="openStateDialog('商品定时下架', scope.row)" v-if="scope.row.status === 1">商品下架 </el-button>
       </template>
     </ProTable>
+
+    <!-- 商品新增/编辑弹窗 -->
     <ProductDialog ref="dialogRef" />
+    <!-- 定时上下架弹窗：使用重命名后的组件 -->
     <ProductStateDialog ref="stateDialogRef" />
   </div>
 </template>
 
-<script setup lang="ts" name="ProductManage">
+<script setup lang="ts" name="ProductManager">
 import { reactive, ref } from 'vue'
 import { ColumnProps } from '@/components/ProTable/interface'
 import ProTable from '@/components/ProTable/index.vue'
-import { ProductApi } from '@/api/modules/product'
 import { ProductStatusList } from '@/configs/enum'
+import { ProductApi } from '@/api/modules/product'
 import { Bottom, Check, CirclePlus, EditPen } from '@element-plus/icons-vue'
 import ProductDialog from './components/ProductDialog.vue'
+// 导入重命名后的定时上下架弹窗
 import ProductStateDialog from './components/ProductStateDialog.vue'
 
-// 获取 ProTable 元素，调用其获取刷新数据方法（还能获取到当前查询参数，方便导出携带参数）
-const proTable = ref()
+// 定义与 ref 同名的变量
+const proTable = ref<InstanceType<typeof ProTable>>()
 
-// 如果表格需要初始化请求参数，直接定义传给 ProTable(之后每次请求都会自动带上该参数，此参数更改之后也会一直带上，改变此参数会自动刷新表格数据)
-const initParam = reactive({})
-const props = defineProps({
-  isShowHeader: {
-    type: Boolean,
-    default: true
-  }
-})
-// 暴露给父组件调用
+// 必须通过 defineExpose 暴露 proTable
 defineExpose({
   proTable
 })
+// 弹窗实例
+const dialogRef = ref()
+const stateDialogRef = ref()
 
-// dataCallback 是对于返回的表格数据做处理，如果你后台返回的数据不是 datalist && total 这些字段，那么你可以在这里进行处理成这些字段
+// 初始化参数
+const initParam = reactive({})
+
+// 表格数据处理
 const dataCallback = (data: any) => {
   return {
     list: data.list,
@@ -63,7 +63,7 @@ const dataCallback = (data: any) => {
   }
 }
 
-// 表格配置项
+// 表格列配置
 const columns: ColumnProps[] = [
   { type: 'selection', fixed: 'left', width: 60 },
   {
@@ -92,32 +92,44 @@ const columns: ColumnProps[] = [
     label: '商品状态',
     minWidth: 120,
     enum: Object.values(ProductStatusList),
-    search: { el: 'select' }
+    search: {
+      el: 'select'
+    },
+    formatter: (row: any) => {
+      const statusMap = { 0: '初始化', 1: '上架', 2: '下架' }
+      const typeMap = { 0: 'info', 1: 'success', 2: 'danger' }
+      return `<el-tag type="${typeMap[row.status]}">${statusMap[row.status]}</el-tag>`
+    }
   },
-  { prop: 'operation', label: '操作', fixed: 'right', width: 230, isShow: props.isShowHeader }
+  {
+    prop: 'operation',
+    label: '操作',
+    fixed: 'right',
+    width: 220
+  }
 ]
 
-// 打开 drawer(新增、查看、编辑)
-const dialogRef = ref()
+// 打开新增/编辑弹窗
 const openDrawer = (title: string, row: Partial<any> = {}) => {
   let params = {
     title,
     row: { ...row },
     isView: title === '查看',
     api: ProductApi.saveOrEdit,
-    getTableList: proTable.value.getTableList,
-    maxHeight: '450px'
+    getTableList: ProTable.value.getTableList,
+    maxHeight: '300px'
   }
   dialogRef.value.acceptParams(params)
 }
-const stateDialogRef = ref()
+
+// 打开定时上下架弹窗
 const openStateDialog = (title: string, row: Partial<any> = {}) => {
   let params = {
     title,
     row: { ...row },
-    isView: title === '查看',
+    isView: false,
     api: ProductApi.saveOrEdit,
-    getTableList: proTable.value.getTableList,
+    getTableList: ProTable.value.getTableList,
     maxHeight: '150px'
   }
   stateDialogRef.value.acceptParams(params)

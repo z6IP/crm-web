@@ -41,12 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import type { ElTree } from 'element-plus'
 import { ElMessage, FormInstance } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
 import { getRoleFormMenuList } from '@/api/modules/role'
 import type Node from 'element-plus/es/components/tree/src/model/node'
-import type { ElTree } from 'element-plus'
 
 interface DialogProps {
   title: string
@@ -59,13 +59,14 @@ interface DialogProps {
   getTableList?: () => Promise<any>
   treeMenuList?: any
 }
+
 const dialogVisible = ref(false)
 const dialogProps = ref<DialogProps>({
   isView: false,
   title: '',
   row: {},
   labelWidth: 160,
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 

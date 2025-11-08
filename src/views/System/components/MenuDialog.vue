@@ -85,11 +85,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { Dialog } from '@/components/Dialog'
 import { getFormMenuList } from '@/api/modules/menu'
 import { ElMessage, FormInstance } from 'element-plus'
 import SelectIcon from '@/components/SelectIcon/index.vue'
+
 interface DialogProps {
   title: string
   isView: boolean
@@ -101,13 +102,14 @@ interface DialogProps {
   getTableList?: () => Promise<any>
   menuList?: any
 }
+
 const dialogVisible = ref(false)
 const dialogProps = ref<DialogProps>({
   isView: false,
   title: '',
   row: { type: 'MENU', openType: 'TAB', keepalive: false, hide: false, sort: 0 },
   labelWidth: 160,
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 
