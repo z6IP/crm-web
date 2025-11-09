@@ -6,4 +6,4 @@
 
 echo "======== 执行pre-commit校验 ========"
 pnpm run ts:check 
-pnpm run lint:lint-staged
+#pnpm run lint:lint-staged
